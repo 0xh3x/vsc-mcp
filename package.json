@@ -21,10 +21,6 @@
       {
         "command": "vsc-mcp.startServer",
         "title": "Start MCP Server"
-      },
-      {
-        "command": "vsc-mcp.gjtest",
-        "title": "GJ Test"
       }
     ]
   },
