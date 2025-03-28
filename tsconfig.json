@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    /* Base Options: */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+
+    /* Bundled projects */
+    "jsx": "react",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
+  },
+  "include": [
+    ".eslintrc.cjs",
+    ".eslintrc.fix.cjs",
+    "**/*.ts",
+    "**/*.mts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.js",
+    "**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
