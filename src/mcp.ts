@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getOpenedFiles, closeFilesByLabel } from "./tools/opened-files";
+import {
+  listAvailableThemes,
+  getCurrentTheme,
+  setThemeByDisplayName,
+} from "./tools/themes";
 
 export function getMcpServer() {
   const server = new McpServer({
@@ -47,6 +52,47 @@ export function getMcpServer() {
       ],
     };
   });
+
+  // Theme-related tools
+  server.tool("listAvailableThemes", {}, async () => {
+    const themes = listAvailableThemes();
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(themes),
+        },
+      ],
+    };
+  });
+
+  server.tool("getCurrentTheme", {}, async () => {
+    const theme = getCurrentTheme();
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(theme),
+        },
+      ],
+    };
+  });
+
+  server.tool(
+    "setThemeByDisplayName",
+    { displayName: z.string() },
+    async ({ displayName }) => {
+      await setThemeByDisplayName(displayName);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Theme set to: ${displayName}`,
+          },
+        ],
+      };
+    }
+  );
 
   return server;
 }

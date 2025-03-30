@@ -9,7 +9,7 @@ let server: http.Server;
 export function activate(context: vscode.ExtensionContext) {
   console.log("Activating vsc-mcp extension");
 
-  function startServer() {
+  async function startServer() {
     console.log("startServer() called");
     if (server && server.listening) {
       console.log("Server already running, returning early");
