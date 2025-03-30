@@ -21,6 +21,10 @@
       {
         "command": "vsc-mcp.startServer",
         "title": "Start MCP Server"
+      },
+      {
+        "command": "vsc-mcp.stopServer",
+        "title": "Stop MCP Server"
       }
     ]
   },
