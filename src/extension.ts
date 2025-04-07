@@ -1,68 +1,55 @@
 import * as vscode from "vscode";
 import * as http from "http";
 import { createServer } from "./server";
+import { logger } from "./logger";
 
 const DEFAULT_PORT = 3344;
-export const outputChannel = vscode.window.createOutputChannel("vsc-mcp");
 let server: http.Server;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("Activating vsc-mcp extension");
+  logger.info("Activating vsc-mcp extension");
 
   async function startServer() {
-    console.log("startServer() called");
+    logger.debug("startServer() called");
     if (server && server.listening) {
-      console.log("Server already running, returning early");
-      outputChannel.appendLine("MCP server is already running");
-      vscode.window.showInformationMessage("MCP server is already running");
+      logger.info("Server already running, returning early");
       return;
     }
 
-    outputChannel.appendLine("Starting MCP server...");
-    console.log("Creating new HTTP server");
+    logger.info("Starting MCP server...");
+    logger.debug("Creating new HTTP server");
     server = createServer();
+    logger.debug("HTTP server created");
     server.listen(DEFAULT_PORT, () => {
-      console.log(`Server listening on port ${DEFAULT_PORT}`);
-      outputChannel.appendLine(
-        `MCP SSE Server running at http://127.0.0.1:${DEFAULT_PORT}/sse`
-      );
-      vscode.window.showInformationMessage(
-        `MCP SSE Server running at http://127.0.0.1:${DEFAULT_PORT}/sse`
+      logger.info(
+        `MCP SSE Server running at http://127.0.0.1:${DEFAULT_PORT}/sse`,
+        true
       );
     });
 
-    outputChannel.appendLine("MCP server started");
-    console.log("Server instance saved to global variable");
+    logger.info("MCP server started");
   }
 
   function stopServer() {
-    console.log("stopServer() called");
-    outputChannel.appendLine("Attempting to stop MCP server...");
+    logger.info("Attempting to stop MCP server...");
     if (server) {
       if (!server.listening) {
-        console.log("Server not running, returning early");
-        outputChannel.appendLine("MCP server is not running");
-        vscode.window.showInformationMessage("MCP server is not running");
+        logger.info("Server not running, returning early");
         return;
       }
-      console.log("Closing server...");
-      outputChannel.appendLine("Closing MCP server...");
+      logger.debug("Closing server...");
       server.close(() => {
-        console.log("Server closed successfully");
-        outputChannel.appendLine("MCP server closed");
-        vscode.window.showInformationMessage("MCP server closed");
+        logger.info("Server closed successfully");
       });
     } else {
-      console.log("No server instance found");
-      outputChannel.appendLine("No MCP server instance found");
-      vscode.window.showInformationMessage("No MCP server instance found");
+      logger.warn("No server instance found");
     }
   }
-  // for some reason, the server doesn't start when the extension is activated
-  // startServer();
+
+  startServer();
 
   // Register the command to start the server
-  console.log("Registering startServer command");
+  logger.debug("Registering startServer command");
   context.subscriptions.push(
     vscode.commands.registerCommand("vsc-mcp.startServer", () => {
       startServer();
@@ -70,36 +57,33 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // Register the command to stop the server
-  console.log("Registering stopServer command");
+  logger.debug("Registering stopServer command");
   context.subscriptions.push(
     vscode.commands.registerCommand("vsc-mcp.stopServer", () => {
       stopServer();
     })
   );
 
-  console.log("Registering cleanup handlers");
+  logger.debug("Registering cleanup handlers");
   context.subscriptions.push({
     dispose: () => {
-      console.log("Cleanup handler called");
+      logger.debug("Cleanup handler called");
       if (server) {
         server.close(() => {
-          console.log("Server closed during cleanup");
-          outputChannel.appendLine("MCP server closed");
-          vscode.window.showInformationMessage("MCP server closed");
+          logger.info("Server closed during cleanup");
         });
       }
     },
   });
-  context.subscriptions.push(outputChannel);
-  console.log("vsc-mcp extension activation complete");
+  context.subscriptions.push(logger);
+  logger.info("vsc-mcp extension activation complete");
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
   if (server) {
     server.close(() => {
-      outputChannel.appendLine("MCP server closed");
-      vscode.window.showInformationMessage("MCP server closed");
+      logger.info("MCP server closed");
     });
   }
 }
