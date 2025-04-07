@@ -3,15 +3,26 @@ import { logger } from "../logger";
 
 export function listAvailableThemes() {
   logger.debug("Listing available themes...");
-  const extensions = vscode.extensions.all;
-  const themeExtensions = extensions
-    .filter((e) => e.packageJSON.categories?.includes("Themes"))
-    .map((e) => ({
-      displayName: e.packageJSON.displayName,
-      description: e.packageJSON.description,
+  const themeExtensions = vscode.extensions.all.filter((e) =>
+    e.packageJSON.categories?.includes("Themes")
+  );
+
+  const themes = themeExtensions.flatMap((extension) => {
+    const contributes = extension.packageJSON.contributes;
+    if (!contributes?.themes) return [];
+
+    return contributes.themes.map((theme: { label: string }) => ({
+      label: theme.label,
+      extensionId: extension.id,
+      extensionName: extension.packageJSON.displayName,
+      description: extension.packageJSON.description,
     }));
-  logger.debug(`Found ${themeExtensions.length} theme extensions`);
-  return themeExtensions;
+  });
+
+  logger.debug(
+    `Found ${themes.length} themes across ${themeExtensions.length} extensions`
+  );
+  return themes;
 }
 
 export function getCurrentTheme() {
@@ -23,12 +34,10 @@ export function getCurrentTheme() {
   return theme;
 }
 
-export function setThemeByDisplayName(displayName: string) {
+export async function setThemeByDisplayName(displayName: string) {
   logger.info(`Setting theme to: ${displayName}`);
-  return vscode.workspace
+  await vscode.workspace
     .getConfiguration("workbench")
-    .update("colorTheme", displayName, true)
-    .then(() => {
-      logger.info(`Theme successfully set to: ${displayName}`, true);
-    });
+    .update("colorTheme", displayName, true);
+  logger.info(`Theme successfully set to: ${displayName}`, true);
 }
