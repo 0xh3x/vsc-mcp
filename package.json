@@ -6,7 +6,7 @@
   "publisher": "gjvar0",
   "description": "MCP server for interacting with VSCode and forks (Cursor, Windsurf and others)",
   "repository": "https://github.com/0xh3x/vsc-mcp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.91.1"
   },
